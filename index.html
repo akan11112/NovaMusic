@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090910">
+<title>NovaMusic</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#090910;color:white;
+ font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+ padding-bottom:100px
+}
+header{padding:25px 20px}
+.logo{color:#a78bfa;letter-spacing:5px;font-weight:900}
+h1{font-size:30px;margin:8px 0}
+button,input{font:inherit}
+button{cursor:pointer}
+.search{
+ margin:0 20px;padding:15px;border-radius:15px;
+ background:#1b1b28;border:1px solid #303044;
+ display:flex;gap:10px
+}
+.search input{
+ background:none;border:0;outline:0;color:white;width:100%
+}
+.section{padding:25px 20px}
+.section h2{font-size:21px}
+.hero{
+ background:linear-gradient(120deg,#5425a8,#192b65);
+ margin:0 20px;padding:22px;border-radius:20px
+}
+.hero button,.primary{
+ background:white;color:#171321;border:0;
+ padding:13px 18px;border-radius:12px;font-weight:700
+}
+.playlist{
+ display:flex;align-items:center;gap:14px;
+ padding:12px 0;border-bottom:1px solid #252533
+}
+.cover{
+ width:60px;height:60px;border-radius:12px;
+ background:linear-gradient(135deg,#8147d9,#192b65);
+ display:grid;place-items:center;font-size:25px
+}
+.info{flex:1}
+.info small{color:#999}
+nav{
+ position:fixed;bottom:0;left:0;right:0;
+ display:flex;justify-content:space-around;
+ background:#14141e;padding:15px 5px;
+ border-top:1px solid #292938
+}
+nav button{background:none;border:0;color:#aaa}
+nav button.active{color:#b69aff}
+.panel{display:none;padding:20px}
+.panel.active{display:block}
+.card{
+ background:#191925;padding:18px;border-radius:16px;
+ margin:12px 0
+}
+input.field{
+ width:100%;padding:14px;border-radius:12px;
+ background:#20202e;border:1px solid #38384a;
+ color:white;margin:10px 0
+}
+.muted{color:#999;font-size:13px}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">NOVA MUSIC</div>
+ <h1>Müziğin burada.</h1>
+ <p class="muted">Müzik dünyanı tek yerde keşfet.</p>
+</header>
+
+<div class="search">
+ <span>⌕</span>
+ <input id="searchInput" placeholder="Şarkı, sanatçı veya albüm ara..."
+ oninput="searchMusic()">
+</div>
+
+<main>
+<section id="home" class="panel active">
+ <div class="hero">
+  <h2>Kitaplığını Nova'ya taşı</h2>
+  <p>YouTube Music oynatma listelerini içe aktar.</p>
+  <button onclick="showPanel('import')">Listelerimi aktar →</button>
+ </div>
+
+ <div class="section">
+  <h2>Kitaplığım</h2>
+  <div id="homePlaylists">
+   <p class="muted">Henüz oynatma listesi eklenmedi.</p>
+  </div>
+ </div>
+</section>
+
+<section id="search" class="panel">
+ <h2>Arama</h2>
+ <div id="searchResults" class="muted">
+  Aradığın müzikleri burada göreceksin.
+ </div>
+</section>
+
+<section id="library" class="panel">
+ <h2>Oynatma listelerim</h2>
+ <div id="allPlaylists"></div>
+</section>
+
+<section id="import" class="panel">
+ <h2>YouTube Music aktarımı</h2>
+ <div class="card">
+  <h3>▶ YouTube hesabını bağla</h3>
+  <p class="muted">
+   Gerçek aktarım için Google OAuth ve YouTube Data API
+   bağlantısı kurulmalıdır.
+  </p>
+  <button class="primary" onclick="connectGoogle()">
+   Google bağlantısını başlat
+  </button>
+ </div>
+ <p class="muted">
+  Bu prototip henüz Google hesabına bağlanmaz.
+  Gerçek OAuth entegrasyonu sonraki geliştirme aşamasıdır.
+ </p>
+</section>
+</main>
+
+<nav>
+ <button class="active" onclick="showPanel('home',this)">⌂<br>Ana sayfa</button>
+ <button onclick="showPanel('search',this)">⌕<br>Keşfet</button>
+ <button onclick="showPanel('library',this)">▤<br>Kitaplık</button>
+ <button onclick="showPanel('import',this)">⇩<br>Aktar</button>
+</nav>
+
+<script>
+let playlists = JSON.parse(
+ localStorage.getItem("novaPlaylists") || "[]"
+);
+
+function showPanel(id,button){
+ document.querySelectorAll(".panel").forEach(p=>{
+  p.classList.remove("active");
+ });
+ document.getElementById(id).classList.add("active");
+
+ document.querySelectorAll("nav button").forEach(b=>{
+  b.classList.remove("active");
+ });
+ if(button) button.classList.add("active");
+}
+
+function renderPlaylists(){
+ const html = playlists.map((p,i)=>`
+  <div class="playlist" onclick="openPlaylist(${i})">
+   <div class="cover">♫</div>
+   <div class="info">
+    <strong>${escapeHTML(p.title)}</strong><br>
+    <small>${p.tracks.length} şarkı</small>
+   </div>
+   <span>›</span>
+  </div>
+ `).join("");
+
+ document.getElementById("homePlaylists").innerHTML =
+  html || '<p class="muted">Henüz liste yok.</p>';
+
+ document.getElementById("allPlaylists").innerHTML =
+  html || '<p class="muted">Henüz liste yok.</p>';
+}
+
+function openPlaylist(index){
+ const p=playlists[index];
+ alert(p.title+"\\n"+p.tracks.join("\\n"));
+}
+
+function searchMusic(){
+ const value=document.getElementById("searchInput").value;
+ showPanel("search");
+ document.getElementById("searchResults").textContent =
+  value ? "Arama altyapısı henüz bağlanmadı: "+value :
+  "Aramak için bir şey yaz.";
+}
+
+function connectGoogle(){
+ alert("Google OAuth bağlantısı henüz kurulmadı. Bu özellik için güvenli sunucu ve Google API ayarları gerekiyor.");
+}
+
+function escapeHTML(text){
+ return String(text).replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+renderPlaylists();
+</script>
+
+</body>
+</html>
