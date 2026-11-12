@@ -1,206 +1,69 @@
-
 <!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#090910">
-<title>NovaMusic</title>
-
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Müzik</title>
 <style>
-*{box-sizing:border-box}
-body{
- margin:0;background:#090910;color:white;
- font-family:-apple-system,BlinkMacSystemFont,sans-serif;
- padding-bottom:100px
-}
-header{padding:25px 20px}
-.logo{color:#a78bfa;letter-spacing:5px;font-weight:900}
-h1{font-size:30px;margin:8px 0}
-button,input{font:inherit}
-button{cursor:pointer}
-.search{
- margin:0 20px;padding:15px;border-radius:15px;
- background:#1b1b28;border:1px solid #303044;
- display:flex;gap:10px
-}
-.search input{
- background:none;border:0;outline:0;color:white;width:100%
-}
-.section{padding:25px 20px}
-.section h2{font-size:21px}
-.hero{
- background:linear-gradient(120deg,#5425a8,#192b65);
- margin:0 20px;padding:22px;border-radius:20px
-}
-.hero button,.primary{
- background:white;color:#171321;border:0;
- padding:13px 18px;border-radius:12px;font-weight:700
-}
-.playlist{
- display:flex;align-items:center;gap:14px;
- padding:12px 0;border-bottom:1px solid #252533
-}
-.cover{
- width:60px;height:60px;border-radius:12px;
- background:linear-gradient(135deg,#8147d9,#192b65);
- display:grid;place-items:center;font-size:25px
-}
-.info{flex:1}
-.info small{color:#999}
-nav{
- position:fixed;bottom:0;left:0;right:0;
- display:flex;justify-content:space-around;
- background:#14141e;padding:15px 5px;
- border-top:1px solid #292938
-}
-nav button{background:none;border:0;color:#aaa}
-nav button.active{color:#b69aff}
-.panel{display:none;padding:20px}
-.panel.active{display:block}
-.card{
- background:#191925;padding:18px;border-radius:16px;
- margin:12px 0
-}
-input.field{
- width:100%;padding:14px;border-radius:12px;
- background:#20202e;border:1px solid #38384a;
- color:white;margin:10px 0
-}
-.muted{color:#999;font-size:13px}
-</style>
-</head>
-
-<body>
-
-<header>
- <div class="logo">NOVA MUSIC</div>
- <h1>Müziğin burada.</h1>
- <p class="muted">Müzik dünyanı tek yerde keşfet.</p>
-</header>
-
-<div class="search">
- <span>⌕</span>
- <input id="searchInput" placeholder="Şarkı, sanatçı veya albüm ara..."
- oninput="searchMusic()">
+:root{--sf:#212121;--t2:#aaa;--ac:#f03;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:#030303;color:#fff;font:15px -apple-system,Roboto,Helvetica,Arial,sans-serif}
+#app{height:100%;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+#pw{display:none;aspect-ratio:16/9;background:#000;flex:none}#pw iframe{width:100%;height:100%}
+#now{display:none;align-items:center;gap:8px;padding:6px 12px;background:#1a1a1a}#now .m{flex:1;min-width:0}
+nav{display:flex;border-bottom:1px solid #222}nav button{flex:1;padding:14px 0;color:var(--t2);font-weight:600}nav .on{color:#fff;border-bottom:2px solid var(--ac)}
+main{flex:1;overflow-y:auto;padding:12px 16px 40px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{width:100%;background:var(--sf);border:0;border-radius:8px;padding:12px;color:#fff;font:inherit;margin:6px 0}
+.btn{background:#fff;color:#000;border-radius:20px;padding:10px 18px;font-weight:600;margin:4px 6px 4px 0}.btn.g{background:var(--sf);color:#fff}
+.row{display:flex;align-items:center;gap:12px;padding:7px 0}.row img{width:80px;height:45px;object-fit:cover;border-radius:4px;flex:none;background:#222}
+.m{flex:1;min-width:0}.t,.s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.s{color:var(--t2);font-size:13px}
+.ib{width:40px;height:40px;font-size:20px;border-radius:50%}h2{font-size:19px;margin:16px 0 8px}.note{color:var(--t2);font-size:13px;line-height:1.5}
+</style></head><body>
+<div id="app">
+<div id="pw"><div id="yt"></div></div>
+<div id="now"><div class="m"><div class="t" id="nt"></div><div class="s" id="nc"></div></div><button class="ib" data-b="pv">⏮</button><button class="ib" data-b="pp" id="pb">❚❚</button><button class="ib" data-b="nx">⏭</button></div>
+<nav><button data-tab="search" class="on">Ara</button><button data-tab="lists">Listeler</button><button data-tab="set">Ayarlar</button></nav>
+<main id="v"></main>
 </div>
-
-<main>
-<section id="home" class="panel active">
- <div class="hero">
-  <h2>Kitaplığını Nova'ya taşı</h2>
-  <p>YouTube Music oynatma listelerini içe aktar.</p>
-  <button onclick="showPanel('import')">Listelerimi aktar →</button>
- </div>
-
- <div class="section">
-  <h2>Kitaplığım</h2>
-  <div id="homePlaylists">
-   <p class="muted">Henüz oynatma listesi eklenmedi.</p>
-  </div>
- </div>
-</section>
-
-<section id="search" class="panel">
- <h2>Arama</h2>
- <div id="searchResults" class="muted">
-  Aradığın müzikleri burada göreceksin.
- </div>
-</section>
-
-<section id="library" class="panel">
- <h2>Oynatma listelerim</h2>
- <div id="allPlaylists"></div>
-</section>
-
-<section id="import" class="panel">
- <h2>YouTube Music aktarımı</h2>
- <div class="card">
-  <h3>▶ YouTube hesabını bağla</h3>
-  <p class="muted">
-   Gerçek aktarım için Google OAuth ve YouTube Data API
-   bağlantısı kurulmalıdır.
-  </p>
-  <button class="primary" onclick="connectGoogle()">
-   Google bağlantısını başlat
-  </button>
- </div>
- <p class="muted">
-  Bu prototip henüz Google hesabına bağlanmaz.
-  Gerçek OAuth entegrasyonu sonraki geliştirme aşamasıdır.
- </p>
-</section>
-</main>
-
-<nav>
- <button class="active" onclick="showPanel('home',this)">⌂<br>Ana sayfa</button>
- <button onclick="showPanel('search',this)">⌕<br>Keşfet</button>
- <button onclick="showPanel('library',this)">▤<br>Kitaplık</button>
- <button onclick="showPanel('import',this)">⇩<br>Aktar</button>
-</nav>
-
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let playlists = JSON.parse(
- localStorage.getItem("novaPlaylists") || "[]"
-);
-
-function showPanel(id,button){
- document.querySelectorAll(".panel").forEach(p=>{
-  p.classList.remove("active");
- });
- document.getElementById(id).classList.add("active");
-
- document.querySelectorAll("nav button").forEach(b=>{
-  b.classList.remove("active");
- });
- if(button) button.classList.add("active");
-}
-
-function renderPlaylists(){
- const html = playlists.map((p,i)=>`
-  <div class="playlist" onclick="openPlaylist(${i})">
-   <div class="cover">♫</div>
-   <div class="info">
-    <strong>${escapeHTML(p.title)}</strong><br>
-    <small>${p.tracks.length} şarkı</small>
-   </div>
-   <span>›</span>
-  </div>
- `).join("");
-
- document.getElementById("homePlaylists").innerHTML =
-  html || '<p class="muted">Henüz liste yok.</p>';
-
- document.getElementById("allPlaylists").innerHTML =
-  html || '<p class="muted">Henüz liste yok.</p>';
-}
-
-function openPlaylist(index){
- const p=playlists[index];
- alert(p.title+"\\n"+p.tracks.join("\\n"));
-}
-
-function searchMusic(){
- const value=document.getElementById("searchInput").value;
- showPanel("search");
- document.getElementById("searchResults").textContent =
-  value ? "Arama altyapısı henüz bağlanmadı: "+value :
-  "Aramak için bir şey yaz.";
-}
-
-function connectGoogle(){
- alert("Google OAuth bağlantısı henüz kurulmadı. Bu özellik için güvenli sunucu ve Google API ayarları gerekiyor.");
-}
-
-function escapeHTML(text){
- return String(text).replace(/[&<>"']/g,c=>({
-  "&":"&amp;","<":"&lt;",">":"&gt;",
-  '"':"&quot;","'":"&#39;"
- }[c]));
-}
-
-renderPlaylists();
-</script>
-
-</body>
-</html>
+const $=s=>document.querySelector(s);
+const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+let key=ls.get('yk')||'',pls=JSON.parse(ls.get('pls')||'[]'),tab='search',res=[],sq='',op=-1,q=[],qi=-1,P=null;
+const save=()=>ls.set('pls',JSON.stringify(pls));
+const dec=s=>{const t=document.createElement('textarea');t.innerHTML=s||'';return t.value};
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function api(p,o){const u='https://www.googleapis.com/youtube/v3/'+p+'?'+new URLSearchParams({...o,key});const j=await(await fetch(u)).json();if(j.error)throw new Error(j.error.message);return j}
+window.onYouTubeIframeAPIReady=()=>{P=new YT.Player('yt',{width:'100%',height:'100%',playerVars:{playsinline:1,rel:0},events:{onStateChange:e=>{if(e.data===0)next();$('#pb').textContent=e.data===1?'❚❚':'▶'}}})};
+const row=(t,i,s)=>`<div class="row" data-s="${s}" data-i="${i}"><img loading="lazy" src="https://i.ytimg.com/vi/${t.id}/mqdefault.jpg" alt=""><div class="m"><div class="t">${esc(t.title)}</div><div class="s">${esc(t.ch)}</div></div><button class="ib" data-a="${s}:${i}">⋮</button></div>`;
+const src=s=>s==='r'?res:(pls[+s.slice(1)]||{items:[]}).items;
+function render(){
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));const v=$('#v');
+ if(tab==='search')v.innerHTML=`<input id="qq" value="${esc(sq)}" placeholder="Şarkı veya sanatçı ara"><button class="btn" data-b="go">Ara</button><div class="s" id="st"></div>`+res.map((t,i)=>row(t,i,'r')).join('');
+ else if(tab==='set')v.innerHTML=`<h2>YouTube API anahtarı</h2><input id="ky" value="${esc(key)}" placeholder="API anahtarı"><button class="btn" data-b="sk">Kaydet</button><p class="note">Google Cloud Console'da bir proje aç, “YouTube Data API v3”ü etkinleştir ve bir API anahtarı oluştur. Ücretsiz günlük kota vardır.</p>`;
+ else if(op<0)v.innerHTML=`<h2>Liste içe aktar</h2><input id="lk" placeholder="YouTube / YouTube Music liste linki"><button class="btn" data-b="im">İçe aktar</button><p class="note">Liste herkese açık veya “liste dışı” olmalı. Özel listeler ve Beğenilenler okunamaz.</p><h2>Listelerim</h2>`+(pls.map((p,i)=>`<div class="row" data-o="${i}"><div class="m"><div class="t">${esc(p.name)}</div><div class="s">${p.items.length} şarkı</div></div><button class="ib" data-d="${i}">🗑</button></div>`).join('')||'<p class="note">Henüz liste yok.</p>');
+ else{const p=pls[op];v.innerHTML=`<button class="ib" data-b="bk">←</button><h2>${esc(p.name)}</h2><button class="btn" data-b="pa">▶ Çal</button>`+p.items.map((t,i)=>row(t,i,'p'+op)).join('')}
+ const qq=$('#qq');if(qq)qq.onkeydown=e=>{if(e.key==='Enter')go()}}
+async function go(){const t=$('#qq').value.trim();if(!t)return;if(!key){alert('Önce Ayarlar sekmesine API anahtarını gir.');return}
+ $('#st').textContent='Aranıyor…';try{const j=await api('search',{part:'snippet',type:'video',videoCategoryId:'10',maxResults:25,q:t});sq=t;res=j.items.map(x=>({id:x.id.videoId,title:dec(x.snippet.title),ch:dec(x.snippet.channelTitle)}));render()}catch(e){$('#st').textContent='Hata: '+e.message}}
+async function imp(){const m=$('#lk').value.match(/[?&]list=([\w-]+)/);if(!m)return alert('Geçerli bir liste linki gir.');if(!key)return alert('Önce Ayarlar sekmesine API anahtarını gir.');
+ try{let items=[],pt='';do{const j=await api('playlistItems',{part:'snippet',maxResults:50,playlistId:m[1],...(pt?{pageToken:pt}:{})});
+ items.push(...j.items.filter(x=>x.snippet.resourceId&&!/^(Private|Deleted) video$/.test(x.snippet.title)).map(x=>({id:x.snippet.resourceId.videoId,title:dec(x.snippet.title),ch:dec((x.snippet.videoOwnerChannelTitle||'').replace(/ - Topic$/,''))})));pt=j.nextPageToken||''}while(pt&&items.length<500);
+ let name='İçe aktarılan liste';try{const i=await api('playlists',{part:'snippet',id:m[1]});name=dec(i.items[0].snippet.title)}catch(e){}
+ pls.push({name,items});save();render()}catch(e){alert('Hata: '+e.message)}}
+function play(l,i){if(!P||!P.loadVideoById)return alert('Oynatıcı yüklenemedi. İnternet bağlantını kontrol et.');q=l.slice();qi=i;const t=q[i];P.loadVideoById(t.id);$('#pw').style.display='block';$('#now').style.display='flex';$('#nt').textContent=t.title;$('#nc').textContent=t.ch;
+ if('mediaSession'in navigator){try{navigator.mediaSession.metadata=new MediaMetadata({title:t.title,artist:t.ch})}catch(e){}}}
+const next=()=>qi+1<q.length&&play(q,qi+1),prev=()=>qi>0&&play(q,qi-1);
+function menu(a){const[s,i]=a.split(':'),t=src(s)[+i];if(!t)return;const n=prompt('Hangi listeye eklensin?\n0 = yeni liste\n'+pls.map((p,k)=>(k+1)+'. '+p.name).join('\n'));if(n===null||n==='')return;
+ let p;if(n==='0'){const nm=prompt('Liste adı');if(!nm)return;p={name:nm,items:[]};pls.push(p)}else p=pls[+n-1];if(!p)return;p.items.push(t);save();render()}
+$('#v').onclick=e=>{const c=k=>e.target.closest(k);let x;
+ if(x=c('[data-a]'))return menu(x.dataset.a);
+ if(x=c('[data-d]')){const i=+x.dataset.d;if(confirm('Liste silinsin mi?')){pls.splice(i,1);save();render()}return}
+ if(x=c('[data-s]'))return play(src(x.dataset.s),+x.dataset.i);
+ if(x=c('[data-o]')){op=+x.dataset.o;return render()}
+ if(x=c('[data-b]')){const b=x.dataset.b;if(b==='go')go();else if(b==='im')imp();else if(b==='bk'){op=-1;render()}else if(b==='pa'){if(pls[op].items.length)play(pls[op].items,0)}else if(b==='sk'){key=$('#ky').value.trim();ls.set('yk',key);alert('Kaydedildi.')}}};
+$('#now').onclick=e=>{const b=e.target.closest('[data-b]');if(!b||!P)return;if(b.dataset.b==='pp')P.getPlayerState()===1?P.pauseVideo():P.playVideo();else if(b.dataset.b==='nx')next();else prev()};
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;op=-1;render()});
+render();
+</script></body></html>
