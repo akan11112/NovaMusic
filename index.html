@@ -66,4 +66,4 @@ $('#v').onclick=e=>{const c=k=>e.target.closest(k);let x;
 $('#now').onclick=e=>{const b=e.target.closest('[data-b]');if(!b||!P)return;if(b.dataset.b==='pp')P.getPlayerState()===1?P.pauseVideo():P.playVideo();else if(b.dataset.b==='nx')next();else prev()};
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;op=-1;render()});
 render();
-</script></body></html>
+</script></body></html> 
